@@ -1,12 +1,19 @@
 export class Renderer {
     constructor(canvas_id) {
         this.canvas = getCanvas(canvas_id);
-        this.canvas.width = this.canvas.getBoundingClientRect().width;
-        this.canvas.height = this.canvas.getBoundingClientRect().height;
+
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+
         this.gl = this.canvas.getContext("webgl2");
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 
-        // Fullscreen quad vertices (x, y)
+        window.addEventListener("resize", () => {
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight;
+            this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+        });
+
         const vertices = new Float32Array([
             -1, -1,
              1, -1,
@@ -14,18 +21,15 @@ export class Renderer {
             -1,  1
         ]);
 
-        // Indices for two triangles
         const indices = new Uint16Array([
             0, 1, 2,
             2, 3, 0
         ]);
 
-        // VBO
         this.vbo = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vbo);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, vertices, this.gl.STATIC_DRAW);
 
-        // EBO
         this.ebo = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.ebo);
         this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, indices, this.gl.STATIC_DRAW);
@@ -60,17 +64,16 @@ export class Renderer {
         this.gl.enableVertexAttribArray(aPosition);
         this.gl.vertexAttribPointer(aPosition, 2, this.gl.FLOAT, false, 0, 0);
 
-        // Camera setup
-        let cameraPosition = [-5, 0, 0];
+        let cameraPosition = [1, -0.5, 5];
         let cameraRotation = new Float32Array([
             1, 0, 0,
             0, 1, 0,
-            0, 0, 1
+            0, 0, 1,
         ]);
 
         this.setVec3(program, "u_cameraPosition", cameraPosition);
         this.setMat3(program, "u_cameraRotation", cameraRotation);
-        this.setVec2(program, "u_resolution", this.canvas.width, this.canvas.height);
+        this.setVec2(program, "u_resolution", [this.canvas.width, this.canvas.height]);
         this.setFloat(program, "u_fov", 45);
 
         this.gl.clearColor(0, 0, 0, 1);

@@ -52,6 +52,8 @@ storage.addEventListener("onFilesLoaded", () => {
     ]
 
     shaderProgram = createProgram(renderer.gl, vertexSources, fragmentSources);
+
+    renderLoop();
 });
 
 function renderLoop() {
@@ -60,5 +62,3 @@ function renderLoop() {
     renderer.draw(shaderProgram);
     requestAnimationFrame(renderLoop);
 }
-
-renderLoop();
