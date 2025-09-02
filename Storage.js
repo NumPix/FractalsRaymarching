@@ -1,4 +1,4 @@
-class Storage extends EventTarget {
+export class Storage extends EventTarget {
     #downloads_needed;
     #number_retrieved;
     #data;

@@ -1,10 +1,8 @@
-// main.vert
-
 #version 300 es
 precision highp float;
 
-in vec3 a_posisiton;
+in vec2 a_position;
 
 void main() {
-    gl_Position = vec4(a_posisiton, 1.0);
+    gl_Position = vec4(a_position, 0.0f, 1.0f);
 }

@@ -1,7 +1,7 @@
 import { Storage } from './Storage.js'
 import { Renderer } from './Renderer.js'
 
-const shader_list = ["./shaders/main.vert", "./shaders/main.frag", "./shaders/cube.frag"];
+const shader_list = ["./shaders/main.vert", "./shaders/main.frag"];
 const storage = new Storage(shader_list); 
 
 let renderer;
@@ -48,8 +48,7 @@ storage.addEventListener("onFilesLoaded", () => {
     ];
 
     const fragmentSources = [
-        storage.get("./shaders/main.frag"),
-        storage.get("./shaders/cube.frag")
+        storage.get("./shaders/main.frag")
     ]
 
     shaderProgram = createProgram(renderer.gl, vertexSources, fragmentSources);
