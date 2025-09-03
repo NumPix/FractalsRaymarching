@@ -65,6 +65,7 @@ float shadow(in Ray lightRay)
             return 0.0;
         t += h;
     }
+    
     return 1.0;
 }
 
@@ -87,6 +88,8 @@ float raycast(Ray ray, out vec3 color) {
     const float MAXIMUM_TRACE_DISTANCE = 1000.0f;   
 
     vec4 tra;
+
+    color = vec3(0.2f);
 
     for (int i = 0; i < NUMBER_OF_STEPS; ++i) {
         vec3 current_position = ray.origin + total_distance * ray.direction;
@@ -143,5 +146,5 @@ void main() {
 
     float sha = shadow(lightRay);
 
-    fragColor = vec4(mix(color, vec3(0.2f), sha), 1.0);
+    fragColor = vec4(mix(color, vec3(0.0f), sha / 2.f), 1.0);
 }

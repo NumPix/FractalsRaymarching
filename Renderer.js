@@ -1,3 +1,5 @@
+import { Camera } from "./Camera.js";
+
 export class Renderer {
     constructor(canvas_id) {
         this.canvas = getCanvas(canvas_id);
@@ -5,8 +7,23 @@ export class Renderer {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
 
+        this.canvas.requestPointerLock = this.canvas.requestPointerLock ||
+                            this.canvas.mozRequestPointerLock ||
+                            this.canvas.webkitRequestPointerLock;
+
+        this.canvas.onclick = () => {
+            this.canvas.requestPointerLock();
+        };
+
         this.gl = this.canvas.getContext("webgl2");
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+
+        this.camera = new Camera(5, 0, 0, -4.5, -0.1);
+
+        window.addEventListener("mousemove", (e) => {
+            if (document.pointerLockElement !== this.canvas) return;
+            this.camera.handleMouseEvent(e);
+        });
 
         window.addEventListener("resize", () => {
             this.canvas.width = window.innerWidth;
@@ -64,15 +81,8 @@ export class Renderer {
         this.gl.enableVertexAttribArray(aPosition);
         this.gl.vertexAttribPointer(aPosition, 2, this.gl.FLOAT, false, 0, 0);
 
-        let cameraPosition = [1, -0.5, 5];
-        let cameraRotation = new Float32Array([
-            1, 0, 0,
-            0, 1, 0,
-            0, 0, 1,
-        ]);
-
-        this.setVec3(program, "u_cameraPosition", cameraPosition);
-        this.setMat3(program, "u_cameraRotation", cameraRotation);
+        this.setVec3(program, "u_cameraPosition", this.camera.getPosition());
+        this.setMat3(program, "u_cameraRotation", this.camera.getRotationMatrix());
         this.setVec2(program, "u_resolution", [this.canvas.width, this.canvas.height]);
         this.setFloat(program, "u_fov", 45);
 

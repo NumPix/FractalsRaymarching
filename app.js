@@ -56,8 +56,47 @@ storage.addEventListener("onFilesLoaded", () => {
     renderLoop();
 });
 
+const keysPressed = {};
+
+window.addEventListener("keydown", (event) => {
+    keysPressed[event.key.toLowerCase()] = true;
+});
+
+window.addEventListener("keyup", (event) => {
+    keysPressed[event.key.toLowerCase()] = false;
+});
+
+function updateCameraPosition() {
+    let moveX = 0;
+    let moveY = 0;
+    let moveZ = 0;
+
+    if (keysPressed['w']) moveZ -= 1;
+    if (keysPressed['s']) moveZ += 1;
+    if (keysPressed['a']) moveX -= 1;
+    if (keysPressed['d']) moveX += 1;
+    if (keysPressed['control']) moveY -= 1;
+    if (keysPressed[' ']) moveY += 1;
+
+    const len = Math.hypot(moveX, moveZ);
+
+    if (len > 0) {
+        moveX /= len;
+        moveY /= len;
+        moveZ /= len;
+    }
+
+    const speed = 0.01;
+
+    renderer.camera.moveForward(moveZ * speed);
+    renderer.camera.moveUp(moveY * speed);
+    renderer.camera.moveRight(moveX * speed);
+}
+
 function renderLoop() {
     if (!renderer) return;
+
+    updateCameraPosition();
     
     renderer.draw(shaderProgram);
     requestAnimationFrame(renderLoop);
